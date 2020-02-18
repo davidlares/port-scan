@@ -2,8 +2,8 @@
 
 from termcolor import colored
 from socket import *
-from threading import *
-import optparse
+from threading import * # handling threads
+import optparse # menu opts capability
 
 # performing the connection (refactored)
 def connection(host, port):
@@ -29,9 +29,9 @@ def portScan(host, ports):
     try:
         # getting the hostname with the IP value
         name = gethostbyaddr(ip)
-        print("[+] Scan results for: %s", name[0])
+        print("[+] Scan results for: %s" % name[0])
     except Exception as e:
-        print("[+] Scan results for: %s", ip)
+        print("[+] Scan results for: %s" % ip)
 
     # setting up the time limit
     setdefaulttimeout(1)
@@ -42,13 +42,13 @@ def portScan(host, ports):
 
 def main():
     parser = optparse.OptionParser('How to use: ' + '-H <target host> -p <target port> ')
-    parser.add_option('-H', dest='t_host', type='string', help='specifiy target host')
-    parser.add_option('-p', dest='t_port', type='string', help='specify target ports separated by commas')
+    parser.add_option('-H', dest='target_host', type='string', help='specifiy target host')
+    parser.add_option('-p', dest='target_port', type='string', help='specify target ports separated by commas')
     # parsing arguments
     (options, args) = parser.parse_args()
     # specify variables
-    host = options.t_host
-    ports = str(options.t_port).split(',')
+    host = options.target_host
+    ports = str(options.target_port).split(',')
     # checking args
     if(host == None) | (ports[0] == None):
         print(parser.usage)
