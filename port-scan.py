@@ -5,41 +5,39 @@ from socket import *
 from threading import *
 import optparse
 
-# defining socket object (AF_INET - Ipv4 addresses, SOCK_STREAM - TCP packets)
-# sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# perform the connection within 2 secs
-# socket.setdefaulttimeout(2)
-
-# asking for the value
-# host = input("[*] Enter host to scan: ")
-# port = int(input("[*] Enter port to scan: "))
-
-# performing the connection
-def connection(port):
-    # connection evaluation
-    if sock.connect_ex((host, port)):
-        print(colored("[!] Port %d - Closed" % port, 'red'))
-    else:
+# performing the connection (refactored)
+def connection(host, port):
+    try:
+        # defining socket object (AF_INET - Ipv4 addresses, SOCK_STREAM - TCP packets)
+        sock = socket(AF_INET, SOCK_STREAM)
+        # connection evaluation
+        sock.connect((host, port))
         print(colored("[!] Port %d - Open" % port, 'green'))
+    except Exception as e:
+        print(colored("[-] %d /tcp Closed" % port, 'red'))
+    finally:
+        # closing socket
+        sock.close()
 
 def portScan(host, ports):
     try:
-        # reaching host
+        # reaching host for getting the IP address
         ip = gethostbyname(host)
     except Exception as e:
         print("Unknown host %s" % host)
 
     try:
+        # getting the hostname with the IP value
         name = gethostbyaddr(ip)
         print("[+] Scan results for: %s", name[0])
     except Exception as e:
         print("[+] Scan results for: %s", ip)
 
-
+    # setting up the time limit
     setdefaulttimeout(1)
     for port in ports:
         # scanning with Threads
-        t = Thread(target=connScan, args=(host, int(port)))
+        t = Thread(target=connection, args=(host, int(port)))
         t.start()
 
 def main():
@@ -52,7 +50,7 @@ def main():
     host = options.t_host
     ports = str(options.t_port).split(',')
     # checking args
-    if(t_host == None) | (t_ports[0] == None):
+    if(host == None) | (ports[0] == None):
         print(parser.usage)
         exit(0)
     # calling function
@@ -60,8 +58,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# port range (known ports)
-# for port in range(1,1024):
-#     # port evaluation
-#     connection(port)
